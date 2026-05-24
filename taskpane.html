@@ -2,46 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ESP32 Streamer</title>
+  <title>ESP32 Weight Streamer</title>
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Segoe UI", sans-serif; font-size: 13px;
-           padding: 12px; background: #fff; color: #242424; }
-    h2   { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+    body { font-family: "Segoe UI", sans-serif; font-size: 13px; padding: 12px; background: #fff; color: #242424; }
+    h2 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
     .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
     label { font-size: 12px; color: #616161; min-width: 36px; }
-    input { flex: 1; border: 1px solid #d1d1d1; border-radius: 4px;
-            padding: 5px 8px; font-size: 12px; color: #242424; }
-    input:focus { outline: none; border-color: #0078d4; }
-    button { padding: 5px 12px; border-radius: 4px; font-size: 12px;
-             cursor: pointer; border: 1px solid #d1d1d1;
-             background: #fff; transition: background .15s; }
-    button:disabled { opacity: .4; cursor: not-allowed; }
-    button:hover:not(:disabled) { background: #f3f3f3; }
+    input { flex: 1; border: 1px solid #d1d1d1; border-radius: 4px; padding: 5px 8px; font-size: 12px; color: #242424; }
+    button { padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; border: 1px solid #d1d1d1; background: #fff; }
     .primary { background: #0078d4 !important; color: #fff; border-color: #0078d4; }
-    .primary:hover:not(:disabled) { background: #106ebe !important; }
-    hr { border: none; border-top: 1px solid #edebe9; margin: 10px 0; }
-    #status { padding: 5px 10px; border-radius: 4px; font-size: 12px; margin: 8px 0; }
-    .ok   { background: #dff6dd; color: #0e5e0e; border: 1px solid #107c10; }
-    .err  { background: #fde7e9; color: #a4262c; border: 1px solid #d13438; }
-    .idle { background: #f9f9f9; color: #616161; border: 1px solid #edebe9; }
-    .grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin: 8px 0; }
-    .card { background: #f9f9f9; border: 1px solid #edebe9; border-radius: 4px;
-            padding: 8px; text-align: center; }
-    .card .val { font-size: 18px; font-weight: 600; color: #0078d4; margin-top: 3px; }
-    .card .lbl { font-size: 10px; color: #616161; }
-    #log { font-size: 11px; font-family: monospace; background: #f9f9f9;
-           border: 1px solid #edebe9; border-radius: 4px; padding: 6px;
-           max-height: 72px; overflow-y: auto; margin-top: 8px; color: #616161; }
+    .card { background: #f9f9f9; border: 1px solid #edebe9; border-radius: 4px; padding: 15px; text-align: center; margin: 8px 0; }
+    .card .val { font-size: 24px; font-weight: 600; color: #0078d4; margin-top: 5px; }
+    .card .lbl { font-size: 12px; color: #616161; }
+    #log { font-size: 11px; font-family: monospace; background: #f9f9f9; border: 1px solid #edebe9; padding: 6px; max-height: 72px; overflow-y: auto; margin-top: 8px; color: #616161; }
   </style>
 </head>
 <body>
-  <h2>ESP32 Data Streamer</h2>
-
+  <h2>ESP32 Weight Streamer</h2>
   <div class="row">
     <label>IP</label>
-    <input id="ip" type="text" value="192.168.1.100" placeholder="192.168.x.x">
+    <input id="ip" type="text" value="192.168.1.100">
     <label>Port</label>
     <input id="port" type="number" value="81" style="max-width:56px">
   </div>
@@ -49,29 +31,19 @@
     <button class="primary" id="btn-con" onclick="connect()">Connect</button>
     <button id="btn-dis" onclick="disconnect()" disabled>Disconnect</button>
   </div>
-  <div id="status" class="idle">Disconnected</div>
-  <hr>
-
-  <div class="grid">
-    <div class="card"><div class="lbl">Temperature</div>
-                      <div class="val" id="v-tmp">--</div></div>
-    <div class="card"><div class="lbl">Humidity</div>
-                      <div class="val" id="v-hum">--</div></div>
-    <div class="card"><div class="lbl">Light</div>
-                      <div class="val" id="v-lux">--</div></div>
+  <div id="status">Disconnected</div>
+  
+  <div class="card">
+    <div class="lbl">Current Weight</div>
+    <div class="val" id="v-weight">0.00 g</div>
   </div>
-  <hr>
 
   <div class="row">
     <label>Row</label>
     <input id="start-row" type="number" value="2" style="max-width:52px">
-    <label>Max</label>
-    <input id="max-rows"  type="number" value="200" style="max-width:60px">
-    <button class="primary" id="btn-log"  onclick="startLog()" disabled>Log</button>
-    <button               id="btn-stop" onclick="stopLog()"  disabled>Stop</button>
-    <button style="color:#d13438;border-color:#d13438" onclick="clearSheet()">Clear</button>
+    <button class="primary" id="btn-log" onclick="startLog()" disabled>Log</button>
+    <button id="btn-stop" onclick="stopLog()" disabled>Stop</button>
   </div>
-
   <div id="log">Ready.</div>
   <script src="taskpane.js"></script>
 </body>
