@@ -1,3 +1,5 @@
+DOWNLOAD THE ZIP FOLDER (esp32-excel.zip)FROM ABOVE HERE
+
 ## 1. The ESP32 Firmware (`ESP32_Streamer.ino`)
 
 *Install **WebSockets** and **ArduinoJson** libraries in the Arduino IDE before uploading.*
