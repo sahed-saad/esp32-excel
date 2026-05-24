@@ -54,17 +54,35 @@ WebSocketsServer wsServer(81);
 
 void setup() {
   Serial.begin(115200);
-  
-  // Initialize Load Cell
-  scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  scale.set_scale(); // Need to calibrate this value
-  scale.tare();      // Reset scale to 0
+  delay(1000); // Give the Serial Monitor a second to wake up
 
   WiFi.begin(SSID, PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
-  
-  wsServer.begin();
-  Serial.println("\nIP Address: " + WiFi.localIP().toString());
+  Serial.println("\nConnecting to WiFi...");
+
+  int timeout = 0;
+  // This loop will run for 30 seconds
+  while (WiFi.status() != WL_CONNECTED && timeout < 60) {
+    delay(500);
+    Serial.print(".");
+    timeout++;
+  }
+
+  Serial.println(""); // New line
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("--- SUCCESS ---");
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("--- FAILED ---");
+    Serial.print("Status Code: ");
+    Serial.println(WiFi.status()); // This number is the key!
+    // 0: WL_IDLE_STATUS
+    // 1: WL_NO_SSID_AVAIL
+    // 3: WL_CONNECT_FAILED (usually wrong password)
+    // 4: WL_CONNECTION_LOST
+    // 6: WL_DISCONNECTED
+  }
 }
 
 void loop() {
