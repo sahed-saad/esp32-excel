@@ -3,13 +3,25 @@ const HEADERS = ["Time", "Weight (g)"];
 
 Office.onReady(async ({ host }) => {
   if (host === Office.HostType.Excel) await writeHeaders();
-  log("Office ready — enter ESP32 IP and click Connect.");
+  log("Office ready — enter ESP32 IP/ngrok link and click Connect.");
 });
 
 function connect() {
-  const ip = el("ip").value.trim();
-  const port = el("port").value;
-  const url = `ws://${ip}:${port}`;
+  const ipInput = el("ip").value.trim();
+  let url;
+
+  // If you paste your ngrok link, format it automatically
+  if (ipInput.includes("ngrok-free.dev")) {
+    // Strip out http:// or https:// if present, then build the wss:// link
+    const cleanDomain = ipInput.replace(/^https?:\/\//, "");
+    url = `wss://${cleanDomain}`;
+  } else {
+    // Fallback to normal IP and Port logic
+    const port = el("port").value;
+    url = `ws://${ipInput}:${port}`;
+  }
+
+  log(`Attempting connection to: ${url}`);
   ws = new WebSocket(url);
 
   ws.onopen = () => {
@@ -68,13 +80,17 @@ async function writeHeaders() {
 }
 
 async function writeRow(weight) {
+  // Capture the row immediately to prevent rapid-stream overwriting
+  const targetRow = currentRow;
+  currentRow++; 
+  
   const row = [new Date().toLocaleTimeString(), weight ?? 0];
+  
   await Excel.run(async ctx => {
     ctx.workbook.worksheets.getActiveWorksheet()
-      .getRange(`A${currentRow}:B${currentRow}`).values = [row];
+      .getRange(`A${targetRow}:B${targetRow}`).values = [row];
     await ctx.sync();
   }).catch(e => log("Write error: " + e.message));
-  currentRow++;
 }
 
 const el = id => document.getElementById(id);
