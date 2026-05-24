@@ -38,26 +38,32 @@ Install Libraries: In Arduino IDE, go to Sketch > Include Library > Manage Libra
 #include <WiFi.h>
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
-#include "DHT.h"
+#include "HX711.h"
 
 // --- CONFIGURATION ---
 const char* SSID     = "YOUR_WIFI_SSID";
 const char* PASSWORD = "YOUR_WIFI_PASSWORD";
-#define DHTPIN 4     
-#define DHTTYPE DHT22 
 
+// Load Cell Pins
+const int LOADCELL_DOUT_PIN = 4;
+const int LOADCELL_SCK_PIN = 5;
+
+HX711 scale;
 WebSocketsServer wsServer(81);
-DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   Serial.begin(115200);
-  dht.begin();
+  
+  // Initialize Load Cell
+  scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+  scale.set_scale(); // Need to calibrate this value
+  scale.tare();      // Reset scale to 0
+
   WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); }
   
   wsServer.begin();
-  Serial.println("\n--- CONNECTED ---");
-  Serial.println("IP Address: " + WiFi.localIP().toString());
+  Serial.println("\nIP Address: " + WiFi.localIP().toString());
 }
 
 void loop() {
@@ -66,19 +72,18 @@ void loop() {
   
   if (millis() - lastSend >= 500) {
     lastSend = millis();
-    float h = dht.readHumidity();
-    float t = dht.readTemperature();
+    
+    // Read weight (units depend on your calibration)
+    float weight = scale.get_units(5); 
 
     StaticJsonDocument<128> doc;
-    doc["tmp"] = isnan(t) ? 0 : round(t * 10) / 10.0;
-    doc["hum"] = isnan(h) ? 0 : round(h * 10) / 10.0;
+    doc["weight"] = weight; // Sending as 'weight'
     
     String json;
     serializeJson(doc, json);
     wsServer.broadcastTXT(json);
   }
 }
-
 ```
 
 ---
