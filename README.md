@@ -27,6 +27,7 @@ This is the standard way to "sideload" an XML manifest in Desktop Excel without 
 
 ## 1. The ESP32 Firmware (`ESP32_Streamer.ino`)
 
+HX711 Arduino Library
 *Install **WebSockets** and **ArduinoJson** libraries in the Arduino IDE before uploading.*
 
 Install Libraries: In Arduino IDE, go to Sketch > Include Library > Manage Libraries... and search for:
