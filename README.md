@@ -1,4 +1,29 @@
-DOWNLOAD THE ZIP FOLDER (esp32-excel.zip)FROM ABOVE HERE
+DOWNLOAD THE ESP32_Excel_Streamer.xml FROM ABOVE HERE
+
+[The "Shared Folder" Solution (Best for Desktop)
+
+This is the standard way to "sideload" an XML manifest in Desktop Excel without needing a local dev server.
+    Create a local folder on your computer (e.g., C:\MyAddins).
+    Download your manifest file (ESP32_Excel_Streamer.xml) and place it inside that C:\MyAddins folder.
+    Share the folder:
+        Right-click C:\MyAddins > Properties > Sharing tab.
+        Click Share..., select your user account, and give it "Read" access.
+        Copy the Network Path (it will look like \\YourComputerName\MyAddins).
+
+   -  Tell Excel to look in that folder:
+        Open Excel (Desktop).
+        Go to File > Options > Trust Center > Trust Center Settings.
+        Select Trusted Add-in Catalogs.
+        In the "Catalog URL" box, paste the Network Path you copied in Step 3.
+        Click Add Catalog.
+        Check the box "Show in Menu" (if prompted) and click OK.
+        Restart Excel.
+
+    Enable the Add-in:
+        Go to the Insert tab in Excel.
+        Click the dropdown next to Get Add-ins (or "My Add-ins").
+        You should now see a new tab labeled "SHARED FOLDER".
+        Select your ESP32 Add-in from there.]
 
 ## 1. The ESP32 Firmware (`ESP32_Streamer.ino`)
 
